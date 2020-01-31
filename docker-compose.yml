@@ -1,0 +1,24 @@
+version:  "3.7"
+services:
+  db:
+    image: mysql:8.0
+    restart: on-failure
+    ports:
+      - "33209:3306"
+    command: ['--default-authentication-plugin=mysql_native_password']
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+  rust:
+    build: ./rust
+    volumes:
+      - ./rust:/rust
+    links:
+      - db
+    ports:
+      - 8088:8088
+    command: cargo run
+    labels:
+      - 'traefik.frontend.rule=Host:questionnaire.local'
